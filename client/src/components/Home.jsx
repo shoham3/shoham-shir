@@ -1,41 +1,41 @@
-import {useState, useEffect} from 'react';
-import File from './File';
+import { useState, useEffect } from "react";
+import File from "./File";
+import { Outlet } from "react-router-dom";
 
 function Home() {
-    const [content, setContent] = useState([]);
-    const currentUser = localStorage.getItem("currUser");
+  const [content, setContent] = useState([]);
+  const currentUser = localStorage.getItem("currUser");
 
-    useEffect(() => {
-        async function fetchContent() {
-            const res = await fetch(
-                `http://localhost:4000/${currentUser}`
-            );
-            const data = await res.json();
-            // console.log(data)
-            setContent((prev) => [...prev, data]);
-        }
+  useEffect(() => {
+    async function fetchContent() {
+      const res = await fetch(`http://localhost:4000/${currentUser}`);
+      const data = await res.json();
+      // console.log(data)
+      setContent((prev) => [...prev, data]);
+    }
 
-        fetchContent();
-    }, [currentUser]);
+    fetchContent();
+  }, [currentUser]);
 
-    console.log(content)
+  console.log(content);
 
-    return (
-        <div>
-            {content.length != 0 &&
-                content[0].map((file) => {
-                    console.log(file)
-                    return(
-                    <File
-                        // key={file.id}
-                        name={file.name}
-                        type={file.type}
-                        isdir={file.isdir}
-                        size={file.size}
-                    />);
-                })}
-        </div>
-    );
+  return (
+    <div>
+      {content.length != 0 &&
+        content[0].map((file) => {
+          console.log(file);
+          return (
+            <File
+              key={file.id}
+              name={file.name}
+              type={file.type}
+              isdir={file.isDir}
+              size={file.size}
+            />
+          );
+        })}
+    </div>
+  );
 }
 export default Home;
 
@@ -90,7 +90,7 @@ export default Home;
 //         async function fetchContent() {
 //             try {
 //                 const res = await fetch(`http://localhost:4000/${currentUser}`);
-                
+
 //                 if (!res.ok) {
 //                     throw new Error(`HTTP error! Status: ${res.status}`);
 //                 }
