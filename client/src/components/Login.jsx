@@ -9,7 +9,7 @@ function Login() {
   async function handleLogin(e) {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:4003/home", {
+      const res = await fetch("http://localhost:4000/", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -19,14 +19,12 @@ function Login() {
           password: `${password}`,
         }),
       });
-      localStorage.setItem("currentUser", JSON.stringify(res.json()));
-      console.log(res);
-      res.status === 200 && navigate(`users/${res.body.id}/home`);
+      localStorage.setItem("currUser", `${username}`);
+      res.status === 200 && navigate(`/${username}`);
     } catch (err) {
-      console.log(err);
+      console.log("Error:", err);
     }
   }
-
   return (
     <form onSubmit={(e) => handleLogin(e)} method="POST">
       <label htmlFor="username">username</label>
