@@ -85,9 +85,37 @@ router.get('/:username', async (req, res) => {
     }
 });
 
+router.delete('/:username/file/:filename',((req,res)=>{
+    const username=req.params.username;
+    const filename=req.params.filename;
+    filePath=path.resolve(`./${username}/file/${filename}`);
+    if(fs.existsSync(filePath)){
+        fs.unlink((filePath,err)=>{
+            if(err){
+                console.log(err) 
+                res.status(404).send("404 not found")}
+        else{
+            console.log('the file has been deleted succssfully');
+            res.send('OK');
+    }})
+    }
+}))
 
 app.listen(port, () => {
     console.log(`this server is running on ${port}`);
 });
 
+// const sourceFile = '../bla.txt';
+// const destinationFolder = '.';
 
+// // Construct the destination path using path.join
+// const destinationFile = path.join(destinationFolder, path.basename(sourceFile));
+
+// // Copy the file
+// fs.copyFile(sourceFile, destinationFile, (err) => {
+//   if (err) {
+//     console.error(`Error copying file: ${err}`);
+//   } else {
+//     console.log(`File copied successfully to ${destinationFile}`);
+//   }
+// });
