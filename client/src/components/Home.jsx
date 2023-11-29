@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import File from "./File";
+import { Outlet } from "react-router-dom";
 
 function Home() {
   const [content, setContent] = useState([]);
@@ -25,10 +26,10 @@ function Home() {
           console.log(file);
           return (
             <File
-              // key={file.id}
+              key={file.id}
               name={file.name}
               type={file.type}
-              isdir={file.isdir}
+              isdir={file.isDir}
               size={file.size}
             />
           );
