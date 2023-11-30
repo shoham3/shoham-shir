@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 function ShowFile() {
   const [content, setContent] = useState("");
-  const { filename, username } = useParams();
+  // const { filename, username } = useParams();
+  const location = useLocation();
+
   useEffect(() => {
     fileContent();
   }, []);
 
   async function fileContent() {
+    console.log(`sending file request`);
+    const urlPath = location.pathname;
+    console.log(urlPath)
     const info = await fetch(
-      `http://localhost:4000/${username}/file/${filename}`
+      `http://localhost:4000${urlPath}`
     );
     const data = await info.text();
     setContent(data);

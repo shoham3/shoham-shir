@@ -15,6 +15,7 @@ function App() {
         <Route path=':username' element={<Home />}></Route>
         <Route path="/:username/file/:filename" element={<ShowFile />} />
         <Route path="/:username/:foldername" element={<Folder />} />
+        <Route path="*" element={<ShowFile />} />
       </Routes>
 
     </>

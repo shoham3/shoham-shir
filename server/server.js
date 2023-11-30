@@ -26,29 +26,31 @@ router.post('/', (req, res) => {
 });
 
 //get file's content
-router.get('/:username/file/:filename', ( async (req,res) => {
-  const filePath=path.resolve(`./${req.params.username}/${req.params.filename}`);
-  fs.readFile(filePath,{encoding:"utf-8"}, (err, data) => {
-    if(err) {
-        console.log(err);
-    } else {
-        res.send(data);
-    }
-  })
+router.get('/*/file/:filename', (async (req, res) => {
+    const username = req.path.split('/file')[0];
+    
+    const filePath = path.resolve(`./${username}/${req.params.filename}`);
+    fs.readFile(filePath, { encoding: "utf-8" }, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(data);
+        }
+    })
 
 }))
 
 //get folder's content
+let idCount = 0;
 router.get('/:username', async (req, res) => {
     const content = [];
     const username = req.params.username;
     const folderPath = path.resolve(`./${username}`);
-    let idCount = 0;
 
     try {
         const files = await fs.promises.readdir(folderPath);
 
-        for (const file of files) {
+        for (let file of files) {
             const stats = await fs.promises.stat(path.resolve(`./${username}/${file}`));
             content.push({
                 id: `${idCount}`,
@@ -76,16 +78,18 @@ router.patch('/:username/file/:filename', async (req, res) => {
     console.log(req.params);
     fs.rename(oldPath, newPath, (err) => {
         if (err) {
-             console.log(err)
+            console.log(err)
         } else {
-          res.sendStatus(200)
+            res.sendStatus(200)
         }
-     } )
-} )
+    })
+})
 
 //delete a file
-router.delete('/:username/file/:filename', (req, res) => {
-    const username = req.params.username;
+router.delete('/*/file/:filename', (req, res) => {
+    const username = req.path.split('/file')[0];
+    console.log(username);
+    console.log(username);
     const filename = req.params.filename;
     const filePath = path.resolve(`./${username}/${filename}`);
 
@@ -103,16 +107,58 @@ router.delete('/:username/file/:filename', (req, res) => {
         res.status(404).send('File not found');
     }
 });
-router.get('/:username/:foldername',(req,res)=>{
+
+//show folder's content
+router.get('/:username/:foldername', async (req, res) => {
+    const content = [];
     const username = req.params.username;
     const foldername = req.params.foldername;
-    const folderPath=path.resolve(`./${username}/${foldername}`);
-    fs.readdir(folderPath,(err,files)=>{
-if(err){res.status(404).send('not found')}
-else {res.send(files)};
-});
+    const folderPath = path.resolve(`./${username}/${foldername}`);
 
-  })
+    try {
+        const files = await fs.promises.readdir(folderPath);
+
+        for (let file of files) {
+            const stats = await fs.promises.stat(path.join(folderPath, `${file}`));
+            content.push({
+                id: `${idCount}`,
+                name: `${file}`,
+                type: `${file.split('.')[1]}`,
+                isDir: stats.isDirectory(),
+                size: `${stats.size} bytes`
+            });
+
+            idCount++;
+        }
+
+        res.json(content);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+    //     fs.readdir(folderPath,(err,files)=>{
+    // if(err){res.status(404).send('not found')}
+    // else {res.send(files)};
+});
+router.delete('/:username/*', async (req, res) => {
+    const username = req.params.username;
+    const folder = req.path.split(`/${username}/`)[1];
+    folderPath = path.resolve(`./${username}/${folder}`)
+    fs.readdir(folderPath, (err, files) => {
+        if (err) {
+            console.log('error:', err)
+        } else {
+            if (files.length === 0) {
+                fs.rmdir(folderPath, (rmdirErr) => {
+                    if (err) { console.log('error:', rmdirErr) }
+                    else { res.sendStatus(200)}
+                })
+            } else {
+                res.sendStatus(400);
+            }
+        }
+    })
+})
 app.listen(port, () => {
     console.log(`this server is running on ${port}`);
 });
