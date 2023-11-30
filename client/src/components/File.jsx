@@ -6,10 +6,6 @@ function File(props) {
   const { username } = useParams();
   function handleFolderClick() {}
 
-  //  async function showInfo(id){
-  //     const info= await fetch(`http://localhost:4000/${username}/file/${id}`);
-  //     const data = await info.json();
-  //   }
   function showFile(filename) {
     navigate(`file/${filename}`);
   }
@@ -21,17 +17,14 @@ function File(props) {
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: { newname: `${prompt}` },
+        body: JSON.stringify({ newname: `${prompt}` }),
       }
     );
-    console.log(rename);
     if (rename.status === 200) {
       setName(prompt);
     }
   }
-  console.log(props);
-  //   function copy(id) {}
-  //   function move(id) {}
+
   async function deleteFile(filename) {
     try {
       const deleteFile = await fetch(
@@ -40,6 +33,7 @@ function File(props) {
           method: "DELETE",
         }
       );
+      props.removeFile(filename);
     } catch (err) {
       console.log(err);
     }
@@ -57,7 +51,6 @@ function File(props) {
             <button onClick={() => move(props.id)}>Move</button>
             <button onClick={() => deleteFile(props.name)}>Delete</button>
           </div>
-          {/* <p>File Size:{props.size}</p> */}
         </>
       ) : (
         <h1 onClick={handleFolderClick}>Folder Name: {name}</h1>

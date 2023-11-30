@@ -12,6 +12,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/", router)
 
+
+//check user's name and password
 router.post('/', (req, res) => {
     const request = req.body;
     let userExist = false;
@@ -23,6 +25,7 @@ router.post('/', (req, res) => {
     userExist ? res.sendStatus(200) : res.sendStatus(404);
 });
 
+//get file's content
 router.get('/:username/file/:filename', ( async (req,res) => {
   const filePath=path.resolve(`./${req.params.username}/${req.params.filename}`);
   fs.readFile(filePath,{encoding:"utf-8"}, (err, data) => {
@@ -35,6 +38,7 @@ router.get('/:username/file/:filename', ( async (req,res) => {
 
 }))
 
+//get folder's content
 router.get('/:username', async (req, res) => {
     const content = [];
     const username = req.params.username;
@@ -64,9 +68,11 @@ router.get('/:username', async (req, res) => {
     }
 });
 
+//to rename a file
 router.patch('/:username/file/:filename', async (req, res) => {
-    const oldPath = path.resolve(`./${req.params.username}/file/${req.params.filename}`)
-    const newPath = path.resolve(`./${req.params.username}/file/${req.body.newname}`)
+    const folderPath = path.resolve(`./${req.params.username}`)
+    const oldPath = path.join(folderPath, `${req.params.filename}`)
+    const newPath = path.join(folderPath, `${req.body.newname}`)
     console.log(req.params);
     fs.rename(oldPath, newPath, (err) => {
         if (err) {
@@ -77,50 +83,26 @@ router.patch('/:username/file/:filename', async (req, res) => {
      } )
 } )
 
-router.patch('/:username/file/:filename', async (req, res) => {
-    const oldPath = path.resolve(`./${req.params.username}/file/${req.params.filename}`)
-    const newPath = path.resolve(`./${req.params.username}/file/${req.body.newname}`)
-    console.log(req.params);
-    fs.rename(oldPath, newPath, (err) => {
-        if (err) {
-             console.log(err)
-        } else {
-          res.sendStatus(200)
-        }
-     } )
-} )
+//delete a file
+router.delete('/:username/file/:filename', (req, res) => {
+    const username = req.params.username;
+    const filename = req.params.filename;
+    const filePath = path.resolve(`./${username}/${filename}`);
 
-router.delete('/:username/file/:filename',((req,res)=>{
-    const username=req.params.username;
-    const filename=req.params.filename;
-    filePath=path.resolve(`./${username}/file/${filename}`);
-    if(fs.existsSync(filePath)){
-        fs.unlink((filePath,err)=>{
-            if(err){
-                console.log(err) 
-                res.status(404).send("404 not found")}
-        else{
-            console.log('the file has been deleted succssfully');
-            res.send('OK');
-    }})
+    if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send("Internal Server Error");
+            } else {
+                console.log('The file has been deleted successfully');
+                res.send('OK');
+            }
+        });
+    } else {
+        res.status(404).send('File not found');
     }
-}))
-
+});
 app.listen(port, () => {
     console.log(`this server is running on ${port}`);
 });
-
-// const sourceFile = '../bla.txt';
-// const destinationFolder = '.';
-
-// // Construct the destination path using path.join
-// const destinationFile = path.join(destinationFolder, path.basename(sourceFile));
-
-// // Copy the file
-// fs.copyFile(sourceFile, destinationFile, (err) => {
-//   if (err) {
-//     console.error(`Error copying file: ${err}`);
-//   } else {
-//     console.log(`File copied successfully to ${destinationFile}`);
-//   }
-// });
