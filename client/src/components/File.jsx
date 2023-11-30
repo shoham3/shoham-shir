@@ -1,8 +1,9 @@
+import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 function File(props) {
   const navigate = useNavigate();
   const [name, setName] = useState(props.name);
   const { username } = useParams();
-    // const [info,setInfo]=useState(false);
   function handleFolderClick() {}
 
   //  async function showInfo(id){
@@ -29,21 +30,20 @@ function File(props) {
     }
   }
   console.log(props);
-  function copy(id) {}
-  function move(id) {}
-  function deleteFile(id) {}
-    async function deleteFile(filename){
-        try{
-      const deletefile= await fetch(`http:localhost:4000/${username}/file/${props.name}`,{
-        method: 'DELETE'});
-        if(!deletefile.ok){ throw new Error ('there is an error')}}
-        catch(err){console.log(err);}
+  //   function copy(id) {}
+  //   function move(id) {}
+  async function deleteFile(filename) {
+    try {
+      const deleteFile = await fetch(
+        `http://localhost:4000/${username}/file/${filename}`,
+        {
+          method: "DELETE",
+        }
+      );
+    } catch (err) {
+      console.log(err);
     }
-    // async function copy(filename){
-    // const copyFile=  await fetch(`http:localhost:4000/${username}/file/${props.name}`,{
-    //     mathod:
-    // })
-    // }
+  }
   return (
     <div className="file-container">
       {!props.isdir ? (
@@ -55,7 +55,7 @@ function File(props) {
             <button onClick={() => rename(props.name)}>Rename</button>
             <button onClick={() => copy(props.id)}>Copy</button>
             <button onClick={() => move(props.id)}>Move</button>
-            <button onClick={() => deleteFile(props.id)}>Delete</button>
+            <button onClick={() => deleteFile(props.name)}>Delete</button>
           </div>
           {/* <p>File Size:{props.size}</p> */}
         </>
@@ -64,7 +64,5 @@ function File(props) {
       )}
     </div>
   );
-}export default File;
-
-
-  //put on the info button a function that will change the setInfo to true .
+}
+export default File;
