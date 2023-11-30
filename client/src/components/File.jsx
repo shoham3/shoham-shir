@@ -22,17 +22,14 @@ function File(props) {
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: { newname: `${prompt}` },
+        body: JSON.stringify({ newname: `${prompt}` }),
       }
     );
-    console.log(rename);
     if (rename.status === 200) {
       setName(prompt);
     }
   }
-  console.log(props);
-  //   function copy(id) {}
-  //   function move(id) {}
+
   async function deleteFile(filename) {
     try {
       const deleteFile = await fetch(
@@ -41,6 +38,7 @@ function File(props) {
           method: "DELETE",
         }
       );
+      props.removeFile(filename);
     } catch (err) {
       console.log(err);
     }
@@ -64,7 +62,6 @@ function File(props) {
             <button onClick={() => move(props.id)}>Move</button>
             <button onClick={() => deleteFile(props.name)}>Delete</button>
           </div>
-          {/* <p>File Size:{props.size}</p> */}
         </>
       ) : (<>
         <h1>Folder Name: {name}</h1>
