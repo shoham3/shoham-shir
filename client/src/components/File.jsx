@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+
 function File(props) {
   const navigate = useNavigate();
   const [name, setName] = useState(props.name);
@@ -58,4 +59,5 @@ function File(props) {
     </div>
   );
 }
+
 export default File;
