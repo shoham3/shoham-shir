@@ -80,7 +80,7 @@ router.patch('/:username/file/:filename',async (req, res) => {
 router.delete('/:username/file/:filename',async (req,res)=>{
     const username=req.params.username;
     const filename=req.params.filename;
-    const filePath= path.resolve(`./${username}/file/${filename}`);
+    const filePath= await path.resolve(`./${username}/file/${filename}`);
     if(fs.existsSync(filePath)){
         fs.unlink(async (filePath,err)=>{
             console.log(filePath)
@@ -139,7 +139,16 @@ router.delete('/:username/file/:filename',async (req,res)=>{
 //       res.status(500).send('Internal Server Error');
 //     }
 //   });
-  
+  router.get('/:username/:foldername',(req,res)=>{
+    const username = req.params.username;
+    const foldername = req.params.foldername;
+    const folderPath=path.resolve(`./${username}/${foldername}`);
+    fs.readdir(folderPath,(err,files)=>{
+if(err){res.status(404).send('not found')}
+else {res.send(files)};
+});
+
+  })
 app.listen(port, () => {
     console.log(`this server is running on ${port}`);
 });
