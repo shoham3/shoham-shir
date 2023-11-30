@@ -64,7 +64,7 @@ router.get('/:username', async (req, res) => {
     }
 });
 
-router.patch('/:username/file/:filename', async (req, res) => {
+router.patch('/:username/file/:filename',async (req, res) => {
     const oldPath = path.resolve(`./${req.params.username}/file/${req.params.filename}`)
     const newPath = path.resolve(`./${req.params.username}/file/${req.body.newname}`)
     console.log(req.params);
@@ -77,25 +77,13 @@ router.patch('/:username/file/:filename', async (req, res) => {
      } )
 } )
 
-router.patch('/:username/file/:filename', async (req, res) => {
-    const oldPath = path.resolve(`./${req.params.username}/file/${req.params.filename}`)
-    const newPath = path.resolve(`./${req.params.username}/file/${req.body.newname}`)
-    console.log(req.params);
-    fs.rename(oldPath, newPath, (err) => {
-        if (err) {
-             console.log(err)
-        } else {
-          res.sendStatus(200)
-        }
-     } )
-} )
-
-router.delete('/:username/file/:filename',((req,res)=>{
+router.delete('/:username/file/:filename',async (req,res)=>{
     const username=req.params.username;
     const filename=req.params.filename;
-    filePath=path.resolve(`./${username}/file/${filename}`);
+    const filePath= path.resolve(`./${username}/file/${filename}`);
     if(fs.existsSync(filePath)){
-        fs.unlink((filePath,err)=>{
+        fs.unlink(async (filePath,err)=>{
+            console.log(filePath)
             if(err){
                 console.log(err) 
                 res.status(404).send("404 not found")}
@@ -104,8 +92,54 @@ router.delete('/:username/file/:filename',((req,res)=>{
             res.send('OK');
     }})
     }
-}))
+})
 
+
+// router.delete('/:username/file/:filename', async (req, res) => {
+//     const username = req.params.username;
+//     const filename = req.params.filename;
+//     const filePath = path.resolve(`./${username}/file/${filename}`);
+  
+//     if (fs.existsSync(filePath)) {
+//       fs.unlink(filePath, (err) => {
+//         if (err) {
+//           console.error(err);
+//           res.status(500).send('Internal Server Error');
+//         } else {
+//           console.log('The file has been deleted successfully');
+//           res.send('OK');
+//         }
+//       });
+//     } else {
+//       res.status(404).send('File not found');
+//     }
+//   });
+
+// router.delete('/:username/file/:filename', async (req, res) => {
+//     const username = req.params.username;
+//     const filename = req.params.filename;
+//     const filePath = path.resolve(`./${username}/file/${filename}`);
+  
+//     try {
+//       if (fs.existsSync(filePath)) {
+//         fs.unlink(filePath, (err) => {
+//           if (err) {
+//             console.error(err);
+//             res.status(500).send('Internal Server Error');
+//           } else {
+//             console.log('The file has been deleted successfully');
+//             res.send('OK');
+//           }
+//         });
+//       } else {
+//         res.status(404).send('File not found');
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send('Internal Server Error');
+//     }
+//   });
+  
 app.listen(port, () => {
     console.log(`this server is running on ${port}`);
 });
